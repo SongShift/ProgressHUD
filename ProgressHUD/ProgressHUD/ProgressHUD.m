@@ -246,6 +246,17 @@
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+{
+    if ([keyPath isEqualToString:@"frame"]) {
+        if(change[@"new"] != change[@"old"]) {
+            [self hudPosition:nil];
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 - (void)registerNotifications
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
@@ -256,6 +267,10 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hudPosition:) name:UIKeyboardDidHideNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hudPosition:) name:UIKeyboardWillShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hudPosition:) name:UIKeyboardDidShowNotification object:nil];
+    
+    if (window != nil) {
+        [window addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -324,7 +339,7 @@
 	}
 	else heightKeyboard = [self keyboardHeight];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	CGRect screen = [UIScreen mainScreen].bounds;
+	CGRect screen = window.bounds;
 	CGPoint center = CGPointMake(screen.size.width/2, (screen.size.height-heightKeyboard)/2);
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	[UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
