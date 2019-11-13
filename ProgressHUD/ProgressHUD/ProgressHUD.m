@@ -159,11 +159,20 @@
 	self.imageSuccess		= [UIImage imageNamed:@"ProgressHUD.bundle/progresshud-success" inBundle:bundle compatibleWithTraitCollection:nil];
 	self.imageError			= [UIImage imageNamed:@"ProgressHUD.bundle/progresshud-error" inBundle:bundle compatibleWithTraitCollection:nil];
 	//---------------------------------------------------------------------------------------------------------------------------------------------
-	id<UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
-	//---------------------------------------------------------------------------------------------------------------------------------------------
-	if ([delegate respondsToSelector:@selector(window)])
-		window = [delegate performSelector:@selector(window)];
-	else window = [[UIApplication sharedApplication] keyWindow];
+    if(@available(iOS 13.0, *)) {
+        for(UIWindow *w in [[UIApplication sharedApplication] windows]) {
+            if(w.isKeyWindow) {
+                window = w;
+                break;
+            }
+        }
+    } else {
+        id<UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
+        if ([delegate respondsToSelector:@selector(window)])
+            window = [delegate performSelector:@selector(window)];
+        else window = [[UIApplication sharedApplication] keyWindow];
+    }
+		
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 	viewBackground = nil; toolbarHUD = nil; spinner = nil; imageView = nil; labelStatus = nil;
 	//---------------------------------------------------------------------------------------------------------------------------------------------
